@@ -2,7 +2,7 @@ package Array;
 
 // 数组中重复的数字
 public class ArrayDuplication {
-    // 时间复杂度O(n)，空间复杂度O(1)
+    // 时间复杂度 O(n)，空间复杂度 O(1)
     // 思路：将值为 i 的元素调整到第 i 个位置上进行求解（类Hash）
     public int findRepeatNumber(int[] nums) {
         int arrayLength = nums.length;
