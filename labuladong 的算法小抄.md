@@ -55,11 +55,19 @@
 
 ## **第 1 章 / 核心套路**
 
+- **算法**：
+  - 通过合适的**工具**（***数据结构***）
+  - 解决特定问题的**方法**
+
+<br>
+
 ### **1.1. 框架思维**
 
 - 从**整体**到**细节**
 - 自**顶**向**下**
 - 从**抽象**到**具体**
+
+<br>
 
 #### **1.1.1. 数据结构的存储方式**
 
@@ -93,7 +101,6 @@
   void traverse(int [] arr) {
       for (int i = 0; i < arr.length; i++) {
           // 迭代遍历 arr[i]
-          print(arr[i]);
       }
   }
   ```
@@ -109,7 +116,6 @@
   void traverse(ListNode head) {
     for (ListNode p = head; p != null; p = p.next) {
       // 迭代遍历 p.val
-      print(p.val);
     }
   }
   ```
@@ -118,10 +124,8 @@
   ```
   void traverse(ListNode head) {
     // 前序遍历 head.val
-    print(head.val);
     traverse(head.next);
     // 后序遍历 head.val
-    print(head.val);
   }
   ```
 
@@ -135,17 +139,14 @@
 
   void traverse(TreeNode root) {
     // 前序遍历（根左右）
-    print(root.val);
     traverse(root.left);
     // 中序遍历（左根右）
-    print(root.val);
     traverse(root.right);
     // 后序遍历（左右根）
-    print(root.val);
   }
   ```
 
-  - ***N 叉树递归*** 遍历框架
+  - ***N 叉树递归*** 遍历框架 → **图**的遍历（***多个 N 叉树 + 布尔数组 visited***）
   ```
   /* N 叉树节点 */
   class TreeNode {
@@ -159,3 +160,12 @@
     }
   }
   ```
+
+<br>
+
+#### **1.1.3. 算法刷题指南**
+
+***第一步：二叉树***
+- 最容易培养**框架思维**
+- 大部分常考算法（**回溯、动态规划、分治**）本质上是树的遍历问题（**递归**）
+
