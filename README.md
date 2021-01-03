@@ -27,6 +27,37 @@ if (num > data[i] && sortType == SortType.descend)
 
 <br>
 
+#### 2. 简化注释，尽量通过代码阐述
+
+> 若编程语言足够有表达力，就不需要注释，尽量通过代码来阐述
+>
+> **去掉下面复杂的注释，只需要创建一个与注释所言同一事物的函数即可**
+>
+> ```
+> // check to see if the employee is eligible for full benefits
+> if ((employee.flags & HOURLY_FLAG) && (employee.age > 65))
+> ```
+> 应替换为
+> ```
+> if (employee.isEligibleForFullBenefits())
+> ```
+
+<br>
+
+#### 3. **Java 5** 中引入主要用于**数组**的**增强型 for 循环**
+
+```
+for (int num : nums)
+```
+等价于
+```
+for (int i = 0; i < nums.length; i++) {
+    nums[i] ...
+}
+```
+
+<br>
+
 ## **总结思路**
 
 #### 1. 谨慎处理边界问题（***空数组***等）
@@ -146,3 +177,13 @@ if (matrix == null || matrix.length == 0 || matrix[0].length == 0)
 
 > 时间复杂度 O(r * c)，空间复杂度 O(r * c)
 
+<br>
+
+> #### **题目 485：最大连续 1 的个数**
+> 数组中只包含 0 和 1
+
+- **思路**：遍历数组，若元素为 1 则计数加 1，若元素为 0 则重新计数，**记录计数的最大值**
+
+- **注意事项**：`count = num == 1 ? count + 1 : 0` 中运算符优先级顺序为 `+` > `==` > `?:` > `=`，因此**不需加括号**
+
+> 时间复杂度 O(n)，空间复杂度 O(1)

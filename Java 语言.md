@@ -61,7 +61,7 @@
 
 #### **1.2.1. 数据类型分类**
 - **基本数据类型**：
-  - 6种数字类型 ：byte、short、int、long、float、double
+  - 6种数字类型：byte、short、int、long、float、double
   - 1种字符类型：char
   - 1种布尔型：boolean
 - **引用数据类型**：
