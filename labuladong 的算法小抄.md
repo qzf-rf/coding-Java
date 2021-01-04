@@ -205,15 +205,22 @@ int fib(int N) {
 }
 ```
 
-***递归算法*** 的**递归树**：时间复杂度 $O(2^N)$，空间复杂度 $O(1)$
+1. ***递归算法*** 的**递归树**：时间复杂度 $O(2^N)$，空间复杂度 $O(1)$
+
+![递归算法的递归树](https://upload-images.jianshu.io/upload_images/24313937-8355c19361b8dd0d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ↓“剪枝”
 
-***带“备忘录”的递归算法（自顶向下）*** 的**递归图**：时间复杂度 $O(N)$，空间复杂度 $O(N)$
+2. ***带“备忘录”的递归算法（自顶向下）*** 的**递归图**：时间复杂度 $O(N)$，空间复杂度 $O(N)$
+
+![带“备忘录”的递归算法的递归图](https://upload-images.jianshu.io/upload_images/24313937-b54b543391fb85f4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ↓
 
-***dp 数组的迭代算法（自底向上）*** 的 **DP table** 图：时间复杂度 $O(N)$，空间复杂度 $O(N)$
+3. ***dp 数组的迭代算法（自底向上）*** 的 **DP table** 图：时间复杂度 $O(N)$，空间复杂度 $O(N)$
+
+![DP table](https://upload-images.jianshu.io/upload_images/24313937-be6fe141cd85c57a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 
 ```
 int fib(iny N) {
@@ -254,4 +261,5 @@ int fib(int N) {
   return pre1;
 }
 ```
+
 
