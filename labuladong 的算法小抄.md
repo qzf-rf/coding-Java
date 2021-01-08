@@ -177,11 +177,12 @@
 - **动态规划三要素**
   - 存在“**重叠子问题**”：优化穷举效率（备忘录、DP table）
   - 具备“**最优子结构**”：子问题的最值 → 原问题的最值
+    - 子问题间**互相独立** → *动态规划*
   - 正确的“**状态转移方程**”
-    - 问题的 base case（**最简单情况**）
-    - “**状态**”空间
-    - “**选择**”使“状态”改变
-    - **dp 数组**表示“状态”和“选择”
+    - 问题的 base case：**最简单情况**
+    - “**状态**”：变量
+    - “**选择**”：使“状态”改变的行为
+    - **dp 数组**：表示“状态”和“选择”
 
 ```
 # 初始化 base case
@@ -207,28 +208,52 @@ int fib(int N) {
 }
 ```
 
-1. ***递归算法*** 的**递归树**：时间复杂度 O(2<sup>N</sup>)，空间复杂度 O(1)
+1. ***递归算法*** 的**递归树**
+   - 时间复杂度 O(2<sup>N</sup>)，空间复杂度 O(1)
 
 ![递归算法的递归树](https://upload-images.jianshu.io/upload_images/24313937-8355c19361b8dd0d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ↓“剪枝”
 
-2. ***带“备忘录”的递归算法（自顶向下）*** 的**递归图**：时间复杂度 O(N)，空间复杂度 O(N)
+2. ***带“备忘录”的递归算法（自顶向下）*** 的**递归图**
+   - 时间复杂度 O(N)，空间复杂度 O(N)
 
 ![带“备忘录”的递归算法的递归图](https://upload-images.jianshu.io/upload_images/24313937-b54b543391fb85f4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
+```
+int fib(int N) {
+  if (N == 0) return 0;
+  // 初始化备忘录
+  int[] memo = new int[N + 1];
+  Arrays.fill(memo, 0);
+  // 进行带备忘录的递归
+  return helper(memo, N);
+}
+
+int helper(int[] memo, int n) {
+  // base case
+  if (n == 1 || n == 2) return 1;
+  // 已经计算过
+  if (memo[n] != 0) return memo[n];
+  memo[n] = helper(memo, n - 1) + helper(memo, n - 2);
+  return memo[n];
+}
+```
+
 ↓
 
-3. ***dp 数组的迭代算法（自底向上）*** 的 **DP table** 图：时间复杂度 O(N)，空间复杂度 O(N)
+3. ***dp 数组的迭代算法（自底向上）*** 的 **DP table** 图
+   - 时间复杂度 O(N)，空间复杂度 O(N)
 
 ![DP table](https://upload-images.jianshu.io/upload_images/24313937-be6fe141cd85c57a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
 ```
-int fib(iny N) {
+int fib(int N) {
   if (N == 0) return 0;
   if (N == 1 || N == 2) return 1;
-  vector<int> dp(N + 1, 0);
+  int[] dp = new int[N + 1];
+  Arrays.fill(dp, 0);
   // base case
   dp[1] = dp[2] = 1;
   for (int i = 3; i <= N; i++) {
@@ -243,7 +268,8 @@ int fib(iny N) {
 
 ↓
 
-***状态压缩*** 的**dp 数组的迭代算法**：时间复杂度 O(N)，空间复杂度 O(1)
+4. ***状态压缩*** 的**dp 数组的迭代算法**
+   - 时间复杂度 O(N)，空间复杂度 O(1)
 
 ```
 int fib(int N) {
@@ -259,4 +285,102 @@ int fib(int N) {
 }
 ```
 
+<br>
 
+#### **1.2.2. 凑零钱问题：状态转移方程**
+
+***k 种面值的硬币：c1, c2, ..., ck，以最少的硬币数凑出总金额 amount***
+
+**算法的函数签名**：
+```
+// coins 可选硬币面值，amount 目标金额
+int coinChange(int[] coins, int amount);
+```
+
+1. **暴力递归**：确定状态转移方程
+   - 时间复杂度 O(kn<sup>k</sup>)，空间复杂度 O(1)
+    1. 确定 **base case**：amount 为 0 时，算法返回 0
+    2. 确定“**状态**”：amount
+    3. 确定“**选择**”：coins
+    4. 确定 **dp 函数/数组**的定义：输入 amount，输出凑出 amount 的最少硬币数量
+
+```
+int coinChange(int[] coins, int amount) {
+  return dp(amount, coins);
+}
+
+int dp(int n, int[] coins) {
+  // base case
+  if (n == 0) return 0;
+  if (n < 0) return -1;
+
+  int res = Integer.MAX_VALUE;
+  for (int coin : coins) {
+    int subproblem = dp(n - coin, coins);
+    // 子问题不能凑出，跳过这一面值
+    if (subproblem == -1) continue;
+    // 取子问题中各面值的最少硬币数
+    res = Math.min(res, 1 + subproblem);
+  }
+  // 原问题不能凑出，则返回 -1
+  return (res != Integer.MAX_VALUE) ? res : -1;
+}
+```
+
+***结果：递归超时***
+
+
+2. **带“备忘录”的递归**：自顶向下，消除重叠子问题
+   - 时间复杂度 O(kn)，空间复杂度 O(n)
+```
+int coinChange(int[] coins, int amount) {
+  int[] memo = new int[amount + 1];
+  Arrays.fill(memo, 0);
+  return helper(memo, amount, coins);
+}
+
+int helper(int[] memo, int n, int[] coins) {
+  // base case
+  if (n == 0) return 0;
+  if (n < 0) return -1;
+
+  if (memo[n] != 0) return memo[n];
+
+  int res = Integer.MAX_VALUE;
+  for (int coin : coins) {
+    int subproblem = helper(memo, n - coin, coins);
+    // 子问题不能凑出，则跳过这一面值
+    if (subproblem == -1) continue;
+    // 取子问题中各面值的最少硬币数
+    res = Math.min(res, 1 + subproblem);
+  }
+  // 原问题不能凑出，则设置备忘录值为 -1
+  memo[n] = (res != Integer.MAX_VALUE) ? res : -1;
+  return memo[n];
+}
+```
+
+3. **dp 数组的迭代**：自底向上
+   - 时间复杂度 O(kn)，空间复杂度 O(n)
+
+```
+int coinChange(int[] coins, int amount) {
+  if (amount == 0) return 0;
+  if (amount < 0) return -1;
+  
+  int[] dp = new int[amount + 1];
+  // 初始化为 amount + 1，最多用 amount + 1 枚硬币凑出
+  Arrays.fill(dp, amount + 1);
+
+  // base case
+  dp[0] = 0;
+  for (int i = 1; i <= amount; i++) {
+    for (int coin : coins) {
+      // 子问题超出范围，跳过
+      if (i - coin < 0) continue;
+      dp[i] = Math.min(dp[i], 1 + dp[i - coin]);
+    }
+  }
+  return (dp[amount] != amount + 1) ? dp[amount] : -1;
+}
+```
