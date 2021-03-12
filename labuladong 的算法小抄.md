@@ -33,7 +33,7 @@
 #### **Java**
 
 1. ***数组*** ：非空检查
-2. ***字符串 `string`*** ：
+2. ***字符串 `String`*** ：
     - 不能直接修改，要用 `toCharArray` 转化成 `char[]` 类型数组再修改
     - `+` 拼接效率低，推荐使用 `StringBuilder` 的 `append` 方法
     - `if(s1.equals(s2))` 判断相等
@@ -382,5 +382,250 @@ int coinChange(int[] coins, int amount) {
     }
   }
   return (dp[amount] != amount + 1) ? dp[amount] : -1;
+}
+```
+
+<br>
+
+### **1.3. 回溯算法**
+
+- **回溯问题**：***决策树*** 的遍历过程，**纯暴力枚举**
+  1. **路径**：***已做出*** 的选择
+  2. **选择列表**：***当前能做*** 的选择
+  3. **结束条件**：***无法再做*** 选择的条件
+
+```
+result = []
+def backtrack( 路径, 选择列表 ):
+  if 满足结束条件:
+    result.add( 路径 )
+    return
+
+  for 选择 in 选择列表:
+    做选择
+    backtrack( 路径, 选择列表 )
+    撤销选择
+```
+
+<br>
+
+#### **1.3.1. 全排列问题**
+
+***n 个不重复的数的全排列共有 n! 个***
+  1. **路径**：[2]
+  2. **选择列表**：[1, 3]
+  3. **结束条件**：选择列表为空
+
+![全排列问题的回溯树](https://gblobscdn.gitbook.com/assets%2F-MTecd6GSkirQ4ZYZRrx%2Fsync%2F2bca8736780b65bbdff30a69fb8e23c7964a1485.jpg?alt=media)
+
+
+- 时间复杂度 O(n * n!)，***递归总次数 * 每次递归中的操作次数***
+- 空间复杂度 O(n)，***递归深度 * 每次递归的辅助空间***
+```
+// 全排列链表
+List<List<Integer>> res = new LinkedList<>();
+
+/* 主函数，输入一组不重复的数字，返回它们的全排列 */
+List<List<Integer>> permute(int[] nums) {
+  // 记录 “路径”
+  LinkedList<Interger> track = new LinkedList<>();
+  backtrack(nums, track);
+  return res;
+}
+
+// 路径：记录在 track 中
+// 选择列表：nums 中不存在于 track 中的元素
+// 结束条件：nums 中元素全部都在 track 中
+void backtrack(int[] nums, LinkedList<Integer> track) {
+  // 触发结束条件
+  if (track.size() == nums.length) {
+    res.add(new LinkedList(track));
+    return;
+  }
+
+  for (int i = 0; i < nums.length; i++) {
+    // 排除不合法的选择
+    if (track.contains(nums[i])) {
+      continue;
+    }
+    // 做选择
+    track.add(nums[i]);
+    // 进入下一层决策树
+    backtrack(nums, track);
+    // 撤销选择
+    track.removeLast();
+  }
+}
+```
+
+<br>
+
+#### **1.3.2. N 皇后问题**
+
+***N × N 的棋盘，放置 N 个皇后，使它们不能从八个方向互相攻击***
+
+```
+List<List<String>> res = new LinkedList<>();
+
+/* 输入棋盘边长 n，返回所有合法的放置方法*/
+List<List<String>> solveNQueens(int n) {
+  // '.' 表示空，'Q' 表示皇后，初始化空棋盘
+  List<String> board = new LinkedList<>();
+  for (int i = 0; i < n; i++) {
+    char[] row = new char[n];
+    Arrays.fill(row, '.');
+    board.add(new String(row));
+  }
+  backtrack(board, 0);
+  return res;
+}
+
+// 路径：board 中小于 row 的行已经成功放置皇后
+// 选择列表：第 row 行所有列都是放置皇后的选择
+// 结束条件：row 大于 board 的最后一行，说明棋盘已满
+void backtrack(List<String> board, int row) {
+  // 触发结束条件
+  if (board.size() == row) {
+    res.add(new LinkedList(board));
+    return;
+  }
+
+  int n = board.get(row).length();
+  for (int col = 0; col < n; col++) {
+    // 排除不合法选择
+    if (!isValid(board, row, col)) {
+      continue;
+    }
+    // 做选择
+    char[] arr = new char[n];
+    Arrays.fill(arr, '.');
+    arr[col] = 'Q';
+    board.set(row, new String(arr));
+    // 进入下一行决策
+    backtrack(board, row + 1);
+    // 撤销选择
+    arr[col] = '.';
+    board.set(row, new String(arr));
+  }
+}
+
+/* 检查 board.get(row).charAt(col) 处是否可以放置皇后 */
+boolean isValid(List<String> board, int row, int col) {
+  int n = board.get(row).length();
+  // 检查列中是否有皇后冲突
+  for (int i = 0; i < row; i++) {
+    if (board.get(i).charAt(col) == 'Q') {
+      return false;
+    }
+  }
+
+  // 检查左上方是否有皇后冲突
+  for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+    if (board.get(i).charAt(j) == 'Q') {
+      return false;
+    }
+  }
+
+  // 检查右上方是否有皇后冲突
+  for (int i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++) {
+    if (board.get(i).charAt(j) == 'Q') {
+      return false;
+    }
+  }
+
+  return true;
+}
+```
+
+- 注意此算法每次递归都需要开辟新数组，导致空间复杂度大，原因是 **String 无法直接修改元素**
+
+<br>
+
+### **1.4. BFS 算法**
+
+- **DFS 算法**：深度优先
+  - 利用 ***递归***，遍历**决策树**
+  - 全排列 / 可行路径
+  - 时间复杂度大
+- **BFS 算法**：广度优先
+  - 利用 ***队列***，**图**的起点到终点
+  - **最短**路径
+  - 空间复杂度大
+
+<br>
+
+- **核心数据结构**：Queue
+- **避免走回头路（图）**：visited
+
+```
+// 计算从起点 start 到终点 target 的最短距离
+int BFS( Node start, Node target) {
+  Queue<Node> q; // 核心数据结构
+  Set<Node> visited; // 避免走回头路
+
+  q.offer(start); // 将起点加入队列
+  visited.add(start);
+  int step = 0; // 记录步数
+
+  while (q not empty) {
+    int sz = q.size();
+    /* 将当前队列中的所有节点向四周扩散 */
+    for (int i = 0; i < sz; i++) {
+      Node cur = q.poll();
+      /* 判断是否到达终点 */
+      if (cur is target) {
+        return step;
+      }
+      /* 若未访问过，则将 cur 的相邻节点加入队列 */
+      for (Node x : cur.adj()) {
+        if (x not in visited) {
+          q.offer(x);
+          visited.add(x);
+        }
+      }
+    }
+    /* 更新步数 */
+    step++;
+  }
+}
+```
+
+<br>
+
+#### **1.4.1. 二叉树的最小高度**
+
+***输入一棵二叉树，计算从根节点到叶子节点的最短距离***
+
+**叶子节点**：左右子节点都为空
+`if (cur.left == null && cur.right == null)`
+
+```
+int minDepth(TreeNode root) {
+  if (root == null) return 0;
+  Queue<TreeNode> q = new LinkedList<>();
+  q.offer(root);
+  int depth = 1;
+
+  while (!q.isEmpty()) {
+    int sz = q.size();
+    /* 将当前队列中的所有节点向四周扩散 */
+    for (int i = 0; i < sz; i++) {
+      TreeNode cur = q.poll();
+      /* 判断是否到达终点，即叶子节点 */
+      if (cur.left == null && cur.right == null) {
+        return depth;
+      }
+      /* 将 cur 的子节点加入队列 */
+      if (cur.left != null) {
+        q.offer(cur.left);
+      }
+      if (cur.right != null) {
+        q.offer(cur.right);
+      }
+    }
+    /* 更新高度 */
+    depth++;
+  }
+  return depth;
 }
 ```
