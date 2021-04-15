@@ -596,7 +596,7 @@ int BFS( Node start, Node target) {
 
 ***输入一棵二叉树，计算从根节点到叶子节点的最短距离***
 
-**叶子节点**：左右子节点都为空
+**叶子节点**：左右子节点都为空<br>
 `if (cur.left == null && cur.right == null)`
 
 ```
@@ -629,3 +629,89 @@ int minDepth(TreeNode root) {
   return depth;
 }
 ```
+
+<br>
+
+#### **1.4.2. 解开密码锁的最小次数**
+
+***带有四个圆形拨轮的转盘锁，每次旋转只能将一个拨轮旋转一次，计算从初始状态 `"0000"` 拨出 `target` 的最少次数，同时避免拨出 `deadends`***
+
+```
+int openLock(String[] deadends, String[] target) {
+  // 记录需要避免的死亡密码
+  Set<String> deads = new HashSet<>();
+  for (String s : deadends) {
+    deads.add(s);
+  }
+  // 记录已经穷举过的密码，避免走回头路
+  Set<String> visited = new HashSet<>();
+  Queue<String> q = new LinkedList<>();
+  // 从初始状态开始启动 BFS 算法
+  int step = 0;
+  q.offer("0000");
+  visited.add("0000");
+
+  while (!q.isEmpty()) {
+    int sz = q.size();
+    // 将当前队列中的所有节点向周围扩散
+    for (int i = 0; i < sz; i++) {
+      String cur = q.poll();
+      // 判断密码是否是死亡密码
+      if (deads.contains(cur)) {
+        continue;
+      }
+      // 判断密码是否到达终点
+      if (cur.equals(target)) {
+        return step;
+      }
+
+      // 将四个拨轮未遍历的相邻节点加入队列
+      for (int j = 0; j < 4; j++) {
+        String up = plusOne(cur, j);
+        if (!visited.contains(up)) {
+          q.offer(up);
+          visited.add(up);
+        }
+        String down = minusOne(cur, j);
+        if (!visited.contains(down)) {
+          q.offer(down);
+          visited.add(down);
+        }
+      }
+    }
+    // 增加步数
+    step++;
+  }
+  // 找不到 target 密码，返回 -1
+  return -1;
+}
+
+// 将 s[j] 向上拨动一次
+String plusOne(String s, int j) {
+  char[] ch = s.toCharArray();
+  if (ch[j] == '9') {
+    ch[j] = '0';
+  }
+  else {
+    ch[j] += 1;
+  }
+  return new String(ch);
+}
+
+// 将 s[j] 向下拨动一次
+String minusOne(String s, int j) {
+  char[] ch = s.toCharArray();
+  if (ch[j] == '0') {
+    ch[j] = '9';
+  }
+  else {
+    ch[j] -= 1;
+  }
+  return new String(ch);
+}
+```
+
+**注意：遍历与否在加入相邻节点时检查**
+- 时间复杂度 O(N * A<sup>N</sup>)，遍历全部密码需要 O(A<sup>N</sup>)，每个密码拨动每一位需要 O(N)
+- 空间复杂度 O(A<sup>N</sup>)
+- A 为数字个数，N 为密码位数
