@@ -416,7 +416,7 @@ def backtrack( 路径, 选择列表 ):
   2. **选择列表**：[1, 3]
   3. **结束条件**：选择列表为空
 
-![全排列问题的回溯树](https://gblobscdn.gitbook.com/assets%2F-MTecd6GSkirQ4ZYZRrx%2Fsync%2F2bca8736780b65bbdff30a69fb8e23c7964a1485.jpg?alt=media)
+![全排列问题的回溯树](https://upload-images.jianshu.io/upload_images/24313937-75373086b40f7cd3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
 - 时间复杂度 O(n * n!)，***递归总次数 * 每次递归中的操作次数***
@@ -715,3 +715,78 @@ String minusOne(String s, int j) {
 - 时间复杂度 O(N * A<sup>N</sup>)，遍历全部密码需要 O(A<sup>N</sup>)，每个密码拨动每一位需要 O(N)
 - 空间复杂度 O(A<sup>N</sup>)
 - A 为数字个数，N 为密码位数
+
+<br>
+
+### **1.5. 双指针技巧套路框架**
+
+- **快、慢指针**：解决**链表**问题
+  - 判定链表中**是否含有环**
+  - 返回**环的起始位置**
+  - 寻找无环**单链表的中点**
+  - 寻找单链表的**倒数第 `k` 个元素**
+
+#### **1.5.1. 快、慢指针常用算法**
+
+1. **判定链表中是否含有环**
+
+- `fast` 指针每次前进 **2 步**，`slow` 指针每次前进 **1 步**
+- **若不含有环**，`fast` 指针遇到 **`null`**
+- **若含有环**，`fast` 指针最终超 `slow` 指针 1 圈，**两指针相遇**
+
+```
+boolean hasCycle(ListNode head) {
+  ListNode fast, slow;
+  // 初始化两指针指向头节点
+  fast = slow = head;
+  while (fast != null && fast.next != null) {
+    // 快指针每次前进 2 步
+    fast = fast.next.next;
+    // 慢指针每次前进 1 步
+    slow = slow.next;
+    // 若含有环，两指针必然相遇
+    if (fast == slow) {
+      return true;
+    }
+  }
+  return false;
+}
+```
+
+<br>
+
+2. **返回环的起始位置**
+
+- `fast` 指针每次前进 **2 步**，`slow` 指针每次前进 **1 步**，**若两指针未相遇，则无环，若两指针相遇**
+  - `slow` 指针走了 **`k`** 步，则 `fast` 指针走了 **`2k`** 步，**环长度为 `k` 的整数倍**
+  - 设相遇点与环起点的距离为 **`m`**，则环起点与头节点距离为 **`k-m`**
+- **将 `slow` 指针重新指向 `head`，这次 `fast` 和 `slow` 指针同速前进，再次相遇即为环起点**
+  - `slow` 指针从 `head` 走 `k-m` 步到达环起点
+  - `fast` 指针从相遇点走 `k-m` 步到达环起点
+
+```
+ListNode detectCycle(ListNode head) {
+  ListNode fast, slow;
+  // 初始化两指针指向头节点
+  fast = slow = head;
+  while (fast != null && fast.next != null) {
+    // 快指针每次前进 2 步
+    fast = fast.next.next;
+    // 慢指针每次前进 1 步
+    slow = slow.next;
+    // 有环
+    if (fast == slow) {
+      // 将慢指针重新指向头节点
+      slow = head;
+      // 双指针同速前进，再次相遇即为环起点
+      while (slow != fast) {
+        fast = fast.next;
+        slow = slow.next;
+      }
+      return slow;
+    }
+  }
+  // 无环
+  return null;
+}
+```
